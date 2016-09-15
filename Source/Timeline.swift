@@ -23,6 +23,7 @@
 //
 
 import Foundation
+import CoreFoundation
 
 /// Responsible for computing the timing metrics for the complete lifecycle of a `Request`.
 public struct Timeline {

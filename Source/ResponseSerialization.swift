@@ -23,6 +23,7 @@
 //
 
 import Foundation
+import CoreFoundation
 
 /// The type in which all data response serializers must conform to in order to serialize a response.
 public protocol DataResponseSerializerProtocol {
