@@ -24,6 +24,7 @@
 
 import Foundation
 import CoreFoundation
+import Dispatch
 
 /// A type that can inspect and optionally adapt a `URLRequest` in some manner if necessary.
 public protocol RequestAdapter {

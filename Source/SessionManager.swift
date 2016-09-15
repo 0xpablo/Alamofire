@@ -24,6 +24,7 @@
 
 import Foundation
 import CoreFoundation
+import Dispatch
 
 /// Responsible for creating and managing `Request` objects, as well as their underlying `NSURLSession`.
 open class SessionManager {
