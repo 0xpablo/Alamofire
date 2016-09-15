@@ -75,9 +75,11 @@ open class Request {
 
     // MARK: Helper Types
 
+    #if !os(Linux)
     /// A closure executed when monitoring upload or download progress of a request.
     public typealias ProgressHandler = (Progress) -> Void
-
+    #endif
+    
     enum RequestTask {
         case data(TaskConvertible?, URLSessionTask?)
         case download(TaskConvertible?, URLSessionTask?)
@@ -358,10 +360,12 @@ open class DataRequest: Request {
     }
 
     // MARK: Properties
-
+    
+    #if !os(Linux)
     /// The progress of fetching the response data from the server for the request.
     open var progress: Progress { return dataDelegate.progress }
-
+    #endif
+    
     var dataDelegate: DataTaskDelegate { return delegate as! DataTaskDelegate }
 
     // MARK: Stream
@@ -381,6 +385,7 @@ open class DataRequest: Request {
         return self
     }
 
+    #if !os(Linux)
     // MARK: Progress
 
     /// Sets a closure to be called periodically during the lifecycle of the `Request` as data is read from the server.
@@ -394,6 +399,7 @@ open class DataRequest: Request {
         dataDelegate.progressHandler = (closure, queue)
         return self
     }
+    #endif
 }
 
 // MARK: -
@@ -458,9 +464,11 @@ open class DownloadRequest: Request {
     /// The resume data of the underlying download task if available after a failure.
     open var resumeData: Data? { return downloadDelegate.resumeData }
 
+    #if !os(Linux)
     /// The progress of downloading the response data from the server for the request.
     open var progress: Progress { return downloadDelegate.progress }
-
+    #endif
+    
     var downloadDelegate: DownloadTaskDelegate { return delegate as! DownloadTaskDelegate }
 
     // MARK: State
@@ -476,6 +484,7 @@ open class DownloadRequest: Request {
         )
     }
 
+    #if !os(Linux)
     // MARK: Progress
 
     /// Sets a closure to be called periodically during the lifecycle of the `Request` as data is read from the server.
@@ -489,6 +498,7 @@ open class DownloadRequest: Request {
         downloadDelegate.progressHandler = (closure, queue)
         return self
     }
+    #endif
 
     // MARK: Destination
 
@@ -549,11 +559,14 @@ open class UploadRequest: DataRequest {
 
     // MARK: Properties
 
+    #if !os(Linux)
     /// The progress of uploading the payload to the server for the upload request.
     open var uploadProgress: Progress { return uploadDelegate.uploadProgress }
-
+    #endif
+    
     var uploadDelegate: UploadTaskDelegate { return delegate as! UploadTaskDelegate }
 
+    #if !os(Linux)
     // MARK: Upload Progress
 
     /// Sets a closure to be called periodically during the lifecycle of the `UploadRequest` as data is sent to
@@ -571,6 +584,7 @@ open class UploadRequest: DataRequest {
         uploadDelegate.uploadProgressHandler = (closure, queue)
         return self
     }
+    #endif
 }
 
 // MARK: -

@@ -182,7 +182,10 @@ class DataTaskDelegate: TaskDelegate, URLSessionDataDelegate {
         }
     }
 
+    #if !os(Linux)
     var progress: Progress
+    #endif
+
     var progressHandler: (closure: Request.ProgressHandler, queue: DispatchQueue)?
 
     var dataStream: ((_ data: Data) -> Void)?
@@ -196,15 +199,21 @@ class DataTaskDelegate: TaskDelegate, URLSessionDataDelegate {
 
     override init(task: URLSessionTask?) {
         mutableData = Data()
+        
+        #if !os(Linux)
         progress = Progress(totalUnitCount: 0)
+        #endif
 
         super.init(task: task)
     }
 
     override func reset() {
         super.reset()
-
+        
+        #if !os(Linux)
         progress = Progress(totalUnitCount: 0)
+        #endif
+        
         totalBytesReceived = 0
         mutableData = Data()
         expectedContentLength = nil
@@ -258,12 +267,14 @@ class DataTaskDelegate: TaskDelegate, URLSessionDataDelegate {
             totalBytesReceived += bytesReceived
             let totalBytesExpected = dataTask.response?.expectedContentLength ?? NSURLSessionTransferSizeUnknown
 
+            #if !os(Linux)
             progress.totalUnitCount = totalBytesExpected
             progress.completedUnitCount = totalBytesReceived
 
             if let progressHandler = progressHandler {
                 progressHandler.queue.async { progressHandler.closure(self.progress) }
             }
+            #endif
         }
     }
 
@@ -291,7 +302,9 @@ class DownloadTaskDelegate: TaskDelegate, URLSessionDownloadDelegate {
 
     var downloadTask: URLSessionDownloadTask { return task as! URLSessionDownloadTask }
 
+    #if !os(Linux)
     var progress: Progress
+    #endif
     var progressHandler: (closure: Request.ProgressHandler, queue: DispatchQueue)?
 
     var resumeData: Data?
@@ -307,14 +320,20 @@ class DownloadTaskDelegate: TaskDelegate, URLSessionDownloadDelegate {
     // MARK: Lifecycle
 
     override init(task: URLSessionTask?) {
+        #if !os(Linux)
         progress = Progress(totalUnitCount: 0)
+        #endif
+
         super.init(task: task)
     }
 
     override func reset() {
         super.reset()
 
+        #if !os(Linux)
         progress = Progress(totalUnitCount: 0)
+        #endif
+        
         resumeData = nil
     }
 
@@ -375,12 +394,14 @@ class DownloadTaskDelegate: TaskDelegate, URLSessionDownloadDelegate {
                 totalBytesExpectedToWrite
             )
         } else {
+            #if !os(Linux)
             progress.totalUnitCount = totalBytesExpectedToWrite
             progress.completedUnitCount = totalBytesWritten
 
             if let progressHandler = progressHandler {
                 progressHandler.queue.async { progressHandler.closure(self.progress) }
             }
+            #endif
         }
     }
 
@@ -393,8 +414,10 @@ class DownloadTaskDelegate: TaskDelegate, URLSessionDownloadDelegate {
         if let downloadTaskDidResumeAtOffset = downloadTaskDidResumeAtOffset {
             downloadTaskDidResumeAtOffset(session, downloadTask, fileOffset, expectedTotalBytes)
         } else {
+            #if !os(Linux)
             progress.totalUnitCount = expectedTotalBytes
             progress.completedUnitCount = fileOffset
+            #endif
         }
     }
 }
@@ -407,19 +430,25 @@ class UploadTaskDelegate: DataTaskDelegate {
 
     var uploadTask: URLSessionUploadTask { return task as! URLSessionUploadTask }
 
+    #if !os(Linux)
     var uploadProgress: Progress
     var uploadProgressHandler: (closure: Request.ProgressHandler, queue: DispatchQueue)?
+    #endif
 
     // MARK: Lifecycle
 
     override init(task: URLSessionTask?) {
+        #if !os(Linux)
         uploadProgress = Progress(totalUnitCount: 0)
+        #endif
         super.init(task: task)
     }
 
     override func reset() {
         super.reset()
+        #if !os(Linux)
         uploadProgress = Progress(totalUnitCount: 0)
+        #endif
     }
 
     // MARK: URLSessionTaskDelegate
@@ -438,12 +467,14 @@ class UploadTaskDelegate: DataTaskDelegate {
         if let taskDidSendBodyData = taskDidSendBodyData {
             taskDidSendBodyData(session, task, bytesSent, totalBytesSent, totalBytesExpectedToSend)
         } else {
+            #if !os(Linux)
             uploadProgress.totalUnitCount = totalBytesExpectedToSend
             uploadProgress.completedUnitCount = totalBytesSent
 
             if let uploadProgressHandler = uploadProgressHandler {
                 uploadProgressHandler.queue.async { uploadProgressHandler.closure(self.uploadProgress) }
             }
+            #endif
         }
     }
 }
